@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::group(['prefix' => 'v1'  , 'middleware' => 'cors'], function(){
 Route::post('/login','MainController@login');
 Route::post('/seller_register','MainController@seller_register');
 Route::post('/buyer_register','MainController@visitor_register');
@@ -14,7 +15,16 @@ Route::post('/update-produk','MainController@product_update');
 Route::post('/search-produk','MainController@search_function');
 Route::post('/all-store-produk','MainController@all_store_produk');
 Route::post('/delete-produk','MainController@delete_produk');
-Route::post('/test','MainController@test_img');
+Route::post('/test','MainController@test_img'); 
+Route::get('/list-produk','MainController@list_produk');
+Route::get('/list-produk2','MainController@list_produk2');
+Route::post('/buy','MainController@transaction');
+Route::post('/seller_transaksi','MainController@transactionSeller');
+Route::post('/visitor_transaksi', 'MainController@transactionVisitor');
+
+
+});
+
 
 
 

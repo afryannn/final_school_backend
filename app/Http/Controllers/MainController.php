@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\ImageModel as imageproduk;
 use App\ProductModel as product;
 use App\StoreModel as store;
+use App\TransactionModel as transaksi;
 use App\UserModel as user;
 use DB;
 use Illuminate\Http\Request;
@@ -19,37 +20,91 @@ class MainController extends Controller
         $username = $request->username;
         $password = $request->password;
         if (!isset($username)) {
-            $arr = array("message" => "maaf,username tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "username kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($password)) {
-            $arr = array("message" => "maaf,password tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "password kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         $account = DB::table('users')->where('username', $username)->first();
         if (!isset($account)) {
-            $arr = array("status" => 204, "message" => "username tidak ditemukan!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "username tidak ditemukan",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         $getpassword = $account->password;
         if ($getpassword == $password) {
             if ($account->role_user == 'SELLER') {
                 $this->id = session()->put('id', $account->id);
                 $getdata = DB::table('users')->where('id', $account->id)->first();
-                $arr = array("status" => 200, "message" => "SUCCES", "data" => $getdata);
-                return json_encode($arr);
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "success",
+                    "DATA" => $getdata,
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
             }
             if ($account->role_user == 'VISITOR') {
                 $getdata = DB::table('users')->where('id', $account->id)->first();
-                $arr = array("status" => 200, "message" => "SUCCES", "data" => $getdata);
-                return json_encode($arr);
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "success",
+                    "DATA" => $getdata,
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
             }
         } else {
-            $arr = array("status" => 204, "message" => "password salah!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "password salah",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
     }
-
+    public function list_produk()
+    {
+        try {
+            $get_data = DB::table("produk")
+                ->rightJoin('produk_image', 'produk_image.product_key', "=", 'produk.product_key')
+                ->Join('store', 'store.id', "=", 'produk.store_id')
+                ->select(
+                    'produk.id',
+                    'produk.product_key',
+                    'store.name',
+                    'produk.store_id',
+                    'produk.product_name',
+                    'produk.product_price',
+                    'produk.category',
+                    'produk.description',
+                    'produk.stock',
+                    'produk_image.img1',
+                    'produk_image.img2',
+                    'produk_image.img3',
+                    'produk_image.img4',
+                    'produk_image.img5'
+                )
+                ->orderBy(DB::raw('RAND()'))
+                ->take(12)
+                ->get();
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+                "DATA" => $get_data,
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            return $e->errorMessage();
+        }
+    }
     public function seller_register(Request $request)
     {
         $name = $request->nama;
@@ -57,44 +112,66 @@ class MainController extends Controller
         $username = $request->username;
         $password = $request->password;
         if (!isset($name)) {
-            $arr = array("message" => "maaf,nama tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "nama kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($email)) {
-            $arr = array("message" => "maaf,email tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "email kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($username)) {
-            $arr = array("message" => "maaf,username tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "username kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($password)) {
-            $arr = array("message" => "maaf,password tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "password kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
-        if (isset($is_username)) {
-            $arr = array("message" => "username sudah terpakai!");
-            return $arr;
+        try {
+            $chek_username = DB::table('users')->where('username', $username)->first();
+            if (isset($chek_username)) {
+                $reply = json_encode(array(
+                    "STATUS" => 204,
+                    "MESSAGE" => "username sudah terpakai",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            } else {
+                $insert = user::insert([
+                    'name' => $name,
+                    'email' => $email,
+                    'username' => $username,
+                    'password' => $password,
+                    'role_user' => 'SELLER',
+                ]);
+                if (!isset($insert)) {
+                    $reply = json_encode(array(
+                        "STATUS" => 403,
+                        "MESSAGE" => "gagal mendaftar",
+                    ));
+                    return response($reply)->header('Content-Type', 'application/json');
+                }
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "berhasil mendaftar",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+
+            }
+        } catch (Exception $exc) {
+            return $e->errorMessage();
         }
-        $insert = user::insert([
-            'name' => $name,
-            'email' => $email,
-            'username' => $username,
-            'password' => $password,
-            'role_user' => 'SELLER',
-        ]);
-        if (!isset($insert)) {
-            $arr = array(
-                "status" => 403,
-                "message" => "GAGAL MENDAFTAR",
-            );
-            return response()->json($arr);
-        }
-        $arr = array(
-            "status" => 200,
-            "message" => "SUKSES MENDAFTAR",
-        );
-        return response()->json($arr);
     }
 
     public function visitor_register(Request $request)
@@ -104,38 +181,99 @@ class MainController extends Controller
         $username = $request->username;
         $password = $request->password;
         if (!isset($name)) {
-            $arr = array("message" => "maaf,nama tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "nama kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($email)) {
-            $arr = array("message" => "maaf,email tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "email kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($username)) {
-            $arr = array("message" => "maaf,username tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "username kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($password)) {
-            $arr = array("message" => "maaf,password tidak boleh kosong!");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "password kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
-        $is_username = user::where('username', $username)->first();
-        if (isset($is_username)) {$arr = array("message" => "username sudah terpakai!");
-            return $arr;
+        try {
+            $chek_username = DB::table('users')->where('username', $username)->first();
+            if (isset($chek_username)) {
+                $reply = json_encode(array(
+                    "STATUS" => 204,
+                    "MESSAGE" => "username sudah terpakai",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            } else {
+                $insert = user::insert([
+                    'name' => $name,
+                    'email' => $email,
+                    'username' => $username,
+                    'password' => $password,
+                    'role_user' => 'VISITOR',
+                ]);
+                if (!isset($insert)) {
+                    $reply = json_encode(array(
+                        "STATUS" => 403,
+                        "MESSAGE" => "gagal mendaftar",
+                    ));
+                    return response($reply)->header('Content-Type', 'application/json');
+                }
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "berhasil mendaftar",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+        } catch (Exception $exc) {
+            return $e->errorMessage();
         }
-        $insert = user::insert([
-            'name' => $name,
-            'email' => $email,
-            'username' => $username,
-            'password' => $password,
-            'role_user' => 'VISITOR',
-        ]);
-        if (!isset($insert)) {
-            $arr = array("status" => 403, "message" => "data anda gagal didaftarkan!");
-            return response()->json($arr);
+
+    }
+    public function list_produk2()
+    {
+        try {
+            $get_data = DB::table("produk")
+                ->rightJoin('produk_image', 'produk_image.product_key', "=", 'produk.product_key')
+                ->Join('store', 'store.id', "=", 'produk.store_id')
+                ->select(
+                    'produk.id',
+                    'produk.product_key',
+                    'store.name',
+                    'produk.store_id',
+                    'produk.product_name',
+                    'produk.product_price',
+                    'produk.category',
+                    'produk.description',
+                    'produk.stock',
+                    'produk_image.img1',
+                    'produk_image.img2',
+                    'produk_image.img3',
+                    'produk_image.img4',
+                    'produk_image.img5'
+                )
+                ->get();
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+                "DATA" => $get_data,
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            return $e->errorMessage();
         }
-        $arr = array("status" => 200, "message" => "Berhasil Menambahkan data!");
-        return response()->json($arr, 200);
     }
     public function complete_produk(Request $request)
     {
@@ -148,16 +286,21 @@ class MainController extends Controller
         $Path = storage_path('/product_images');
         $get_id_produk = DB::table('produk')->where('product_key', $key_product)->first();
         if (!isset($get_id_produk)) {
-            $arr = array("status" => 403, "message" => "KESALAHAN SERVER TIDAK DI KETAHUI");
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         $val_id_produk = $get_id_produk->id;
         $img_name = $key_product;
         if (!isset($val_id_produk)) {
-            $arr = array("status" => 403, "message" => "KESALAHAN SERVER TIDAK DI KETAHUI");
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
-
         try {
             if ($request->hasFile('img1')) {
                 $image = $request->file('img1');
@@ -177,9 +320,6 @@ class MainController extends Controller
             if ($request->hasFile('img4')) {
                 $image = $request->file('img4');
                 $name_img_4 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
-                if (isset($name_img_4)) {
-                    $name_img_4 = "Null";
-                }
                 $image->move($Path, $name_img_4);
             }
             if ($request->hasFile('img5')) {
@@ -191,14 +331,20 @@ class MainController extends Controller
             return $e->errorMessage();
         }
         if (!isset($name_img_1)) {
-            $arr = array("status" => 204, "message" => "SETIDAKNYA ADA 1 GAMBAR");
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "setidaknya 1 gambar",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         $check_product_key = DB::table('produk_image')->where('product_key', $key_product)->first();
         if (isset($check_product_key)) {
             if (!isset($update_img)) {
-                $arr = array("status" => 403, "message" => "PRODUK SUDAH LENGKAP", "redirect" => "update-produk");
-                return json_encode($arr);
+                $reply = json_encode(array(
+                    "STATUS" => 403,
+                    "MESSAGE" => "product sudah lengkap",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
             }
         } else {
             $image = imageproduk::insert([
@@ -216,11 +362,18 @@ class MainController extends Controller
             'stock' => $stock,
         ]);
         if (!isset($update)) {
-            $arr = array("status" => 403, "message" => "KESALAHAN SERVER TIDAK DI KETAHUI");
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+
         }
-        $arr = array("status" => 200, "message" => "BERHASIL MELENGKAPI PRODUK");
-        return response()->json($arr);
+        $reply = json_encode(array(
+            "STATUS" => 200,
+            "MESSAGE" => "success",
+        ));
+        return response($reply)->header('Content-Type', 'application/json');
     }
     public function product(Request $request)
     {
@@ -233,8 +386,11 @@ class MainController extends Controller
             $table_store = DB::table('store')->where('user_id', $user_id)->first();
             $store_id = $table_store->id;
             if (!isset($table_store)) {
-                $arr = array("status" => 403, "message" => "USER ID NOT FOUND");
-                return response()->json($arr);
+                $reply = json_encode(array(
+                    "STATUS" => 403,
+                    "MESSAGE" => "kesalahan server",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
             }
             $insert = product::insert([
                 'store_id' => $store_id,
@@ -245,8 +401,13 @@ class MainController extends Controller
                 'description' => "kosong",
                 'stock' => 0,
             ]);
-            $arr = array("status" => 200, "key_product" => $key_product, "message" => "PRODUK BERHASIL DI TAMBAHKAN");
-            return response()->json($arr, 200);
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+                "KEY_PRODUCT" => $key_product,
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+
         } catch (Exception $e) {
             return $e->errorMessage();
         }
@@ -262,20 +423,22 @@ class MainController extends Controller
         $is_seller = DB::table('users')->where('id', $user_id)->first();
         $get_user_role = $is_seller->role_user;
         if ($get_user_role == "VISITOR") {
-            $arr = array(
-                "status" => 403,
-                "message" => "PERMINTAAN DI TOLAK",
-            );
-            return response()->json($arr);
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "permintaan di tolak",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+
         } else {
             try {
                 $isExist = DB::table('store')->where('user_id', $user_id)->exists();
                 if ($isExist) {
-                    $arr = array(
-                        "status" => 403,
-                        "message" => "ANDA SUDAH MEMBUAT TOKO",
-                    );
-                    return response()->json($arr);
+                    $reply = json_encode(array(
+                        "STATUS" => 403,
+                        "MESSAGE" => "toko sudah ada",
+                    ));
+                    return response($reply)->header('Content-Type', 'application/json');
+
                 } else {
                     if ($request->hasFile('img_profil')) {
                         $image = $request->file('img_profil');
@@ -302,15 +465,17 @@ class MainController extends Controller
                         'address' => $address,
                     ]);
                     if (!isset($insert)) {
-                        $arr = array(
-                            "status" => 403, "message" => "data anda gagal didaftarkan!");
-                        return response()->json($arr);
+                        $reply = json_encode(array(
+                            "STATUS" => 403,
+                            "MESSAGE" => "gagal mendaftar",
+                        ));
+                        return response($reply)->header('Content-Type', 'application/json');
                     }
-                    $arr = array(
-                        "status" => 200,
-                        "message" => "TOKO BERHASIL DI BUAT",
-                    );
-                    return response()->json($arr, 200);
+                    $reply = json_encode(array(
+                        "STATUS" => 200,
+                        "MESSAGE" => "success",
+                    ));
+                    return response($reply)->header('Content-Type', 'application/json');
                 }
             } catch (Exception $e) {
                 return $e->errorMessage();
@@ -331,8 +496,11 @@ class MainController extends Controller
         $Path = storage_path('/product_images');
         $tb_image_produk = DB::table('produk_image')->where('product_key', $key_product)->first();
         if (!isset($tb_image_produk)) {
-            $arr = array("status" => 403, "message" => "KESALAHAN SERVER TIDAK DI KETAHUI");
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         $old_img_1 = $tb_image_produk->img1;
         $old_img_2 = $tb_image_produk->img2;
@@ -402,13 +570,58 @@ class MainController extends Controller
             'img5' => $name_img_5,
         ]);
         if (!isset($update1) && !isset($update2)) {
-            $arr = array("status" => 403, "message" => "KESALAHAN SERVER TIDAK DI KETAHUI");
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
-        $arr = array("status" => 200, "message" => "BERHASIL UPDATE");
-        return json_encode($arr);
+        $reply = json_encode(array(
+            "STATUS" => 200,
+            "MESSAGE" => "success",
+        ));
+        return response($reply)->header('Content-Type', 'application/json');
     }
+    public function transactionVisitor(Request $request)
+    {
+        $v_id = $request->id;
+        if (!isset($v_id)) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $tb_store = DB::table('users')->where('id', $v_id)->first();
+        if (!isset($tb_store)) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $get_tb_transaksi = $tb_store->id;
+        try {
+            $sql = DB::table('transaction')->where('visitor_id', $get_tb_transaksi)->get();
+            if ($sql->isEmpty()) {
+                $reply = json_encode(array(
+                    "STATUS" => 403,
+                    "MESSAGE" => "transaksi kosong",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            } else {
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "success",
+                    "DATA" => $sql,
+                ));
 
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+        } catch (Exception $exc) {
+            return $exc->errorMessage();
+        }
+    }
     public function all_store_produk(Request $request)
     {
         $result = array();
@@ -416,17 +629,22 @@ class MainController extends Controller
         $user_id = $request->user_id;
         $tb_store = DB::table('store')->where('user_id', $user_id)->first();
         if (!isset($tb_store)) {
-            $arr = array("status" => 403, "message" => "KESALAHAN SERVER TIDAK DI KETAHUI");
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         } else {
             $store_id = $tb_store->id;
             try {
                 $get_data_product = DB::table('produk')->where('produk.store_id', $store_id)
                     ->rightJoin('produk_image', 'produk_image.product_key', '=', 'produk.product_key')
+                    ->Join('store', 'store.id', "=", 'produk.store_id')
                     ->select(
                         'produk.id',
                         'produk.product_key',
                         'produk.store_id',
+                        'store.name',
                         'produk.product_name',
                         'produk.product_price',
                         'produk.category',
@@ -443,19 +661,18 @@ class MainController extends Controller
                 return $e->errorMessage();
             }
             if ($get_data_product->isEmpty()) {
-                $arr = array(
-                    "status" => 200,
-                    "message" => "SUCCESS",
-                    "data" => "TOKO ANDA TIDAK ADA PRODUK",
-                );
-                return response()->json($arr, 200);
+                $reply = json_encode(array(
+                    "STATUS" => 403,
+                    "MESSAGE" => "gagal mendaftar",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
             } else {
-                $arr = array(
-                    "status" => 200,
-                    "message" => "SUCCESS",
-                    "data" => $get_data_product,
-                );
-                return response()->json($arr, 200);
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "success",
+                    "DATA" => $get_data_product,
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
             }
         }
     }
@@ -468,8 +685,10 @@ class MainController extends Controller
             $get_data_product = DB::table('produk')
                 ->where('product_name', 'LIKE', "%{$search_key}%")
                 ->rightJoin('produk_image', 'produk_image.product_key', '=', 'produk.product_key')
+                ->Join('store', 'store.id', "=", 'produk.store_id')
                 ->select(
                     'produk.id',
+                    'store.name',
                     'produk.product_key',
                     'produk.store_id',
                     'produk.product_name',
@@ -487,18 +706,18 @@ class MainController extends Controller
             return $e->errorMessage();
         }
         if ($get_data_product->isEmpty()) {
-            $arr = array(
-                "status" => 201,
-                "message" => "KATA KUNCI TIDAK YANG ANDA CARI DITEMUKAN",
-            );
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "Kata kunci tidak ditemukan",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         } else {
-            $arr = array(
-                "status" => 200,
-                "message" => "SUCCESS",
-                "data" => $get_data_product,
-            );
-            return json_encode($arr);
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+                "DATA" => $get_data_product,
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
     }
     public function delete_produk(Request $request)
@@ -506,6 +725,7 @@ class MainController extends Controller
         $product_key = $request->key_product;
         $Path = storage_path('/product_images');
         $default = "Default";
+
         try {
             $get_img = imageproduk::where('product_key', $product_key)->first();
             $img_1 = $get_img->img1;
@@ -522,9 +742,132 @@ class MainController extends Controller
             $get_img->delete();
             $get_produk->delete();
         } catch (Exception $exc) {
+            return $exc->errorMessage();
+        }
+
+        $reply = json_encode(array(
+            "STATUS" => 200,
+            "MESSAGE" => "Berhasil Menghapus Produk",
+        ));
+        return response($reply)->header('Content-Type', 'application/json');
+    }
+
+    public function transaction(Request $request)
+    {
+        $i_visitor = $request->visitor_id;
+        $i_store = $request->store_id;
+        $s_name = $request->store_name;
+        $p_name = $request->product_name;
+        $p_price = $request->product_price;
+        $p_key = $request->product_key;
+        $p_img1 = $request->img1;
+        $address_seller = $request->address_seller;
+        $status = "DI PROSES";
+
+        if (
+            !isset($i_visitor) ||
+            !isset($i_store) ||
+            !isset($s_name)
+        ) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "1.Server error",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+
+        if (
+            !isset($p_name) ||
+            !isset($p_price) ||
+            !isset($p_img1)
+        ) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "2.Server error",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+
+        if (
+            !isset($address_seller) ||
+            !isset($status)
+        ) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "3.Server error",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+
+        try {
+            $insert = transaksi::insert([
+                'visitor_id' => $i_visitor,
+                'store_id' => $i_store,
+                'store_name' => $s_name,
+                'product_name' => $p_name,
+                'product_price' => $p_price,
+                'product_key' => $p_key,
+                'product_img1' => $p_img1,
+                'address_seller' => $address_seller,
+                'status' => $status,
+            ]);
+            if (!isset($insert)) {
+                $reply = json_encode(array(
+                    "STATUS" => 403,
+                    "MESSAGE" => "kesalahan server",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+
+        } catch (Exception $exc) {
             return $e->errorMessage();
         }
-        $arr = array("status" => 200, "message" => "SUCCES");
-        return response()->json($arr);
     }
+
+    public function transactionSeller(Request $request)
+    {
+        $s_id = $request->id;
+        if (!isset($s_id)) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $tb_store = DB::table('store')->where('user_id', $s_id)->first();
+        if (!isset($tb_store)) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $get_tb_transaksi = $tb_store->id;
+        try {
+            $sql = DB::table('transaction')->where('store_id', $get_tb_transaksi)->get();
+            if ($sql->isEmpty()) {
+                $reply = json_encode(array(
+                    "STATUS" => 403,
+                    "MESSAGE" => "transaksi kosong",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            } else {
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "success",
+                    "DATA" => $sql,
+                ));
+
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+        } catch (Exception $exc) {
+            return $exc->errorMessage();
+        }
+    }
+
 }
