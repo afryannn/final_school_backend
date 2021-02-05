@@ -7,9 +7,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1'  , 'middleware' => 'cors'], function(){
 Route::post('/login','MainController@login');
 Route::post('/seller_register','MainController@seller_register');
-Route::post('/buyer_register','MainController@visitor_register');
+Route::post('/register','MainController@register');
 Route::post('/create_store','MainController@createstore');
 Route::post('/create_produk','MainController@product');
+Route::post('/check_store','MainController@cekstore');
 Route::post('/complete_produk','MainController@complete_produk');
 Route::post('/update-produk','MainController@product_update');
 Route::post('/search-produk','MainController@search_function');
@@ -19,9 +20,11 @@ Route::post('/test','MainController@test_img');
 Route::get('/list-produk','MainController@list_produk');
 Route::get('/list-produk2','MainController@list_produk2');
 Route::post('/buy','MainController@transaction');
+Route::get('/Detail/{product_key}','MainController@DetailProduk');
 Route::post('/seller_transaksi','MainController@transactionSeller');
 Route::post('/visitor_transaksi', 'MainController@transactionVisitor');
-
+Route::post('/count-product', 'MainController@countproduct');
+Route::get('/categor', 'MainController@category');
 
 });
 
