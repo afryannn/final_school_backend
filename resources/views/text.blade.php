@@ -1,6 +1,7 @@
 <center>
 <b>REGISTER</b>
 </br>
+<a href="http://localhost:8000/api/v1/getExcel/3" class="btn btn-success my-3" target="_blank">EXPORT EXCEL</a>
 /seller_register || 
 /visitor_register
 <br>

@@ -6,15 +6,30 @@ use App\ImageModel as imageproduk;
 use App\ProductModel as product;
 use App\StoreModel as store;
 use App\TransactionModel as transaksi;
+use App\Exports\TransaksiExport as te;
+use Maatwebsite\Excel\Facades\Excel;
 use App\UserModel as user;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Session;
+use Response;
 
 class MainController extends Controller
 {
     public $id;
+    public function Excel($id){
+        if(!$id){
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "SERVER ERROR",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }else{
+            
+        }
+        return Excel::download(new te($id), 'siswa.xlsx');
+    }
     public function category(){
       $getdata = DB::table('category')->get();
       $reply = json_encode(array(
@@ -514,85 +529,87 @@ class MainController extends Controller
         $key_product = $request->key_produk;
         $description = $request->deskripsi;
         $product_price = $request->harga;
-        $category = $request->kategori;
         $img_name = $key_product;
         $stock = $request->stok;
+        $C_TYPE = $request->type;
         $Path = storage_path('/product_images');
-        $tb_image_produk = DB::table('produk_image')->where('product_key', $key_product)->first();
-        if (!isset($tb_image_produk)) {
-            $reply = json_encode(array(
-                "STATUS" => 403,
-                "MESSAGE" => "kesalahan server",
-            ));
-            return response($reply)->header('Content-Type', 'application/json');
+        if($C_TYPE == "MEDIA"){
+            $tb_image_produk = DB::table('produk_image')->where('product_key', $key_product)->first();
+            if (!isset($tb_image_produk)) {
+                $reply = json_encode(array(
+                    "STATUS" => 403,
+                    "MESSAGE" => "PkEY NOT FOUND",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+            $old_img_1 = $tb_image_produk->img1;
+            $old_img_2 = $tb_image_produk->img2;
+            $old_img_3 = $tb_image_produk->img3;
+            $old_img_4 = $tb_image_produk->img4;
+            $old_img_5 = $tb_image_produk->img5;
+            try {
+                // if (!file_exists($config_file_path))
+                // {
+                //   throw new Exception("Configuration file not found.");
+                // }
+                if ($request->hasFile('img1')) {
+                    $image = $request->file('img1');
+                    $name_img_1 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
+                    $image->move($Path, $name_img_1);
+                    File::delete($path_delete . '/' . $old_img_1);
+                } else {
+                    $name_img_1 = $tb_image_produk->img1;
+                }
+                if ($request->hasFile('img2')) {
+                    $image = $request->file('img2');
+                    $name_img_2 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
+                    $image->move($Path, $name_img_2);
+                    File::delete($path_delete . '/' . $old_img_2);
+                } else {
+                    $name_img_2 = $tb_image_produk->img2;
+                }
+                if ($request->hasFile('img3')) {
+                    $image = $request->file('img3');
+                    $name_img_3 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
+                    $image->move($Path, $name_img_3);
+                    File::delete($path_delete . '/' . $old_img_3);
+                } else {
+                    $name_img_3 = $tb_image_produk->img3;
+                }
+                if ($request->hasFile('img4')) {
+                    $image = $request->file('img4');
+                    $name_img_4 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
+                    $image->move($Path, $name_img_4);
+                    File::delete($path_delete . '/' . $old_img_4);
+                } else {
+                    $name_img_4 = $tb_image_produk->img4;
+                }
+                if ($request->hasFile('img5')) {
+                    $image = $request->file('img5');
+                    $name_img_5 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
+                    $image->move($Path, $name_img_5);
+                    File::delete($path_delete . '/' . $old_img_5);
+                } else {
+                    $name_img_5 = $tb_image_produk->img5;
+                }
+            } catch (Exception $exc) {
+                return $e->errorMessage();
+            }
+            $update2 = DB::table('produk_image')->where('product_key', $key_product)->update([
+                'img1' => $name_img_1,
+                'img2' => $name_img_2,
+                'img3' => $name_img_3,
+                'img4' => $name_img_4,
+                'img5' => $name_img_5,
+            ]);
+        }elseif($C_TYPE == "DATA"){
+            $update1 = DB::table('produk')->where('product_key', $key_product)->update([
+                'product_name' => $name_product,
+                'product_price' => $product_price,
+                'description' => $description,
+                'stock' => $stock,
+            ]);
         }
-        $old_img_1 = $tb_image_produk->img1;
-        $old_img_2 = $tb_image_produk->img2;
-        $old_img_3 = $tb_image_produk->img3;
-        $old_img_4 = $tb_image_produk->img4;
-        $old_img_5 = $tb_image_produk->img5;
-        try {
-            // if (!file_exists($config_file_path))
-            // {
-            //   throw new Exception("Configuration file not found.");
-            // }
-            if ($request->hasFile('img1')) {
-                $image = $request->file('img1');
-                $name_img_1 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
-                $image->move($Path, $name_img_1);
-                File::delete($path_delete . '/' . $old_img_1);
-            } else {
-                $name_img_1 = $tb_image_produk->img1;
-            }
-            if ($request->hasFile('img2')) {
-                $image = $request->file('img2');
-                $name_img_2 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
-                $image->move($Path, $name_img_2);
-                File::delete($path_delete . '/' . $old_img_2);
-            } else {
-                $name_img_2 = $tb_image_produk->img2;
-            }
-            if ($request->hasFile('img3')) {
-                $image = $request->file('img3');
-                $name_img_3 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
-                $image->move($Path, $name_img_3);
-                File::delete($path_delete . '/' . $old_img_3);
-            } else {
-                $name_img_3 = $tb_image_produk->img3;
-            }
-            if ($request->hasFile('img4')) {
-                $image = $request->file('img4');
-                $name_img_4 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
-                $image->move($Path, $name_img_4);
-                File::delete($path_delete . '/' . $old_img_4);
-            } else {
-                $name_img_4 = $tb_image_produk->img4;
-            }
-            if ($request->hasFile('img5')) {
-                $image = $request->file('img5');
-                $name_img_5 = $img_name . str_random(9) . '.' . $image->getClientOriginalExtension();
-                $image->move($Path, $name_img_5);
-                File::delete($path_delete . '/' . $old_img_5);
-            } else {
-                $name_img_5 = $tb_image_produk->img5;
-            }
-        } catch (Exception $exc) {
-            return $e->errorMessage();
-        }
-        $update1 = DB::table('produk')->where('product_key', $key_product)->update([
-            'product_name' => $name_product,
-            'product_price' => $product_price,
-            'category' => $category,
-            'description' => $description,
-            'stock' => $stock,
-        ]);
-        $update2 = DB::table('produk_image')->where('product_key', $key_product)->update([
-            'img1' => $name_img_1,
-            'img2' => $name_img_2,
-            'img3' => $name_img_3,
-            'img4' => $name_img_4,
-            'img5' => $name_img_5,
-        ]);
         if (!isset($update1) && !isset($update2)) {
             $reply = json_encode(array(
                 "STATUS" => 403,
@@ -744,6 +761,24 @@ class MainController extends Controller
             return response($reply)->header('Content-Type', 'application/json');
         }
     }
+    public function getImg(Request $req){
+      $pKey = $req->product_key;
+      $tb_store = DB::table('produk_image')->where('product_key', $pKey)->first();
+      if (!isset($tb_store)) {
+          $reply = json_encode(array(
+              "STATUS" => 403,
+              "MESSAGE" => "kesalahan server",
+          ));
+          return response($reply)->header('Content-Type', 'application/json');
+      }else{
+        $reply = json_encode(array(
+            "STATUS" => 200,
+            "MESSAGE" => "SUCCESS",
+            "ITEM" => $tb_store
+        ));
+        return response($reply)->header('Content-Type', 'application/json');
+      }
+    }
     public function delete_produk(Request $request)
     {
         $product_key = $request->key_product;
@@ -831,7 +866,7 @@ class MainController extends Controller
                 'visitor_id' => $i_visitor,
                 'store_id' => $i_store,
                 'store_name' => $s_name,
-                'visitor_name' => $get_v_name,
+                'visitor_name' => $get_v_name->name,
                 'product_name' => $p_name,
                 'product_price' => $p_price,
                 'product_key' => $p_key,
@@ -924,7 +959,7 @@ class MainController extends Controller
             $store_id = $variable['store_id'];
             $stores = DB::table('store')->where('id', $store_id)->get();
             foreach ($stores as $store) {
-                $variable['name'] = $store->name;
+                $variable['store_name'] = $store->name;
                 $variable['address'] = $store->address;
                 $result[] = $variable;
             }
@@ -964,17 +999,78 @@ class MainController extends Controller
             ));
             return response($reply)->header('Content-Type', 'application/json');
         }
-        $a = $g->count();
-        $arr = array("item"=>$a);
+        $FINAL_COUNT_PRODUCT = $g->count();
+        $cTransaction = DB::table('transaction')->where('store_id', $s_id)->get();
+        if ($cTransaction->isEmpty()) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "NULL",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $FINAL_COUNT_TRANSACTION = $cTransaction->count();    
+        $sTransaction = DB::table('transaction')->where('store_id', $s_id)->where('status','SUCCESS')->get();
+        if ($sTransaction->isEmpty()) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "NULL",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $FINAL_SUCCESS_TRANSACTION = $sTransaction->count();   
+       
+        $arr = array(
+            "TITLE" => "Jumlah Produk",
+            "VALUE"=>$FINAL_COUNT_PRODUCT,
+            "TITLE" => "Jumlah Transaksi",
+            "VALUE"=>$FINAL_COUNT_TRANSACTION,
+            "TITLE" => "Transaksi Success",
+            "VALUE"=>$FINAL_SUCCESS_TRANSACTION
+        );
         $reply = json_encode(array(
             "STATUS" => 200,
             "MESSAGE" => "SUCCESS",
             "DATA" => $arr
         ));
-        return response($reply)->header('Content-Type', 'application/json');;
+        return response($reply)->header('Content-Type', 'application/json');
        }catch (Exception $exc) {
             return $exc->errorMessage();
         }
     }
 
+    public function NewItem(){
+        try {
+            $get_data = DB::table("produk")
+                ->rightJoin('produk_image', 'produk_image.product_key', "=", 'produk.product_key')
+                ->Join('store', 'store.id', "=", 'produk.store_id')
+                ->select(
+                    'produk.id',
+                    'produk.product_key',
+                    'store.name',
+                    'produk.store_id',
+                    'produk.product_name',
+                    'produk.product_price',
+                    'produk.category',
+                    'produk.description',
+                    'produk.stock',
+                    'produk_image.img1',
+                    'produk_image.img2',
+                    'produk_image.img3',
+                    'produk_image.img4',
+                    'produk_image.img5'
+                )
+                ->latest('id')
+                ->take(8)
+                ->get();
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+                "DATA" => $get_data,
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            return $e->errorMessage();
+        }
+    }
+   
 }

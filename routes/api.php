@@ -16,7 +16,8 @@ Route::post('/update-produk','MainController@product_update');
 Route::post('/search-produk','MainController@search_function');
 Route::post('/all-store-produk','MainController@all_store_produk');
 Route::post('/delete-produk','MainController@delete_produk');
-Route::post('/test','MainController@test_img'); 
+Route::post('/test','MainController@test_img');
+Route::post('/uImg','MainController@getImg'); 
 Route::get('/list-produk','MainController@list_produk');
 Route::get('/list-produk2','MainController@list_produk2');
 Route::post('/buy','MainController@transaction');
@@ -25,6 +26,8 @@ Route::post('/seller_transaksi','MainController@transactionSeller');
 Route::post('/visitor_transaksi', 'MainController@transactionVisitor');
 Route::post('/count-product', 'MainController@countproduct');
 Route::get('/categor', 'MainController@category');
+Route::get('/new-item', 'MainController@NewItem');
+Route::get('/getExcel/{id}', 'MainController@Excel');
 
 });
 
