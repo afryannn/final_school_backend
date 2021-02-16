@@ -28,7 +28,7 @@ class MainController extends Controller
         }else{
             
         }
-        return Excel::download(new te($id), 'siswa.xlsx');
+        return Excel::download(new te($id), 'DataTransaksi.xlsx');
     }
     public function category(){
       $getdata = DB::table('category')->get();
@@ -850,7 +850,7 @@ class MainController extends Controller
         }
 
         if (
-            !isset($address_seller) ||
+            !isset($address_customer) ||
             !isset($status)
         ) {
             $reply = json_encode(array(
@@ -873,7 +873,6 @@ class MainController extends Controller
                 'product_img1' => $p_img1,
                 'description' => $dsc,
                 'address_customer' => $address_customer,
-                'address_seller' => $address_seller,
                 'status' => $status,
             ]);
             if (!isset($insert)) {

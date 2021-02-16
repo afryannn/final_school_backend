@@ -4,7 +4,7 @@ namespace App\Exports;
 
 use App\TransactionModel;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\withHeadings;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
 
 class TransaksiExport implements FromCollection,WithHeadings
@@ -21,8 +21,7 @@ class TransaksiExport implements FromCollection,WithHeadings
             'transaction.product_price',
             'transaction.address_customer',
             'transaction.description',
-            'transaction.status',
-        )->get();
+            'transaction.status')->get();
         return $sql;
         
     }
