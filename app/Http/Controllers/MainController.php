@@ -9,6 +9,7 @@ use App\TransactionModel as transaksi;
 use App\Exports\TransaksiExport as te;
 use Maatwebsite\Excel\Facades\Excel;
 use App\UserModel as user;
+use PDF;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -29,6 +30,11 @@ class MainController extends Controller
             
         }
         return Excel::download(new te($id), 'DataTransaksi.xlsx');
+    }
+    public function getPdf($id){
+        $db = user::all();
+        $pdf = PDF::loadview('tPDF',['data'=>$db]);
+    	return $pdf->download('laporan-pdf');
     }
     public function category(){
       $getdata = DB::table('category')->get();

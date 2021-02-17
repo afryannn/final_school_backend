@@ -28,7 +28,7 @@ Route::post('/count-product', 'MainController@countproduct');
 Route::get('/categor', 'MainController@category');
 Route::get('/new-item', 'MainController@NewItem');
 Route::get('/getExcel/{id}', 'MainController@Excel');
-
+Route::get('/getPdf/{id}', 'MainController@getPdf');
 });
 
 
