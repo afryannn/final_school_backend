@@ -12,5 +12,5 @@
 */
 
 Route::get('/', function () {
-    return view('tPDF');
+    return view('welcome');
 });

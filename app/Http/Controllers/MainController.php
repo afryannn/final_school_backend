@@ -2,23 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use App\ImageModel as imageproduk;
 use App\ProductModel as product;
 use App\StoreModel as store;
 use App\TransactionModel as transaksi;
 use App\Exports\TransaksiExport as te;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\response;
 use App\UserModel as user;
 use PDF;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Session;
-use Response;
+
 
 class MainController extends Controller
 {
-    public $id;
+    protected $id;
+    protected $isDownload;
+    public function __construct(){
+        $this->isDownload = "false"; 
+    }
     public function Excel($id){
         if(!$id){
             $reply = json_encode(array(
@@ -27,14 +33,53 @@ class MainController extends Controller
             ));
             return response($reply)->header('Content-Type', 'application/json');
         }else{
-            
+         return Excel::download(new te($id), 'DataTransaksi.xlsx');
         }
-        return Excel::download(new te($id), 'DataTransaksi.xlsx');
     }
     public function getPdf($id){
-        $db = user::all();
-        $pdf = PDF::loadview('tPDF',['data'=>$db]);
-    	return $pdf->download('laporan-pdf');
+        $trans = DB::table('transaction')->where('id',$id)->first();
+        $_id_str = $trans->store_id;
+        $_get_id_seller = DB::table('store')->where('id', $_id_str)->first();
+        $_id_usr_slr = $_get_id_seller->user_id;
+        $_SLR = DB::table('users')->where('id',$_id_usr_slr)->first();
+        $_USR = DB::table('users')->where('id', '3')->first();
+        $this->isDownload = "true";
+        $pdf = PDF::loadview('tPDF',['items'=>$trans,'user'=>$_USR,'seller'=>$_SLR]);
+        return $pdf->download('laporan-pdf')->header('Content-Type', 'application/pdf');
+    }
+    public function confirm(Request $req){
+        $_id = $req->id;
+        if(!$_id){
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "SERVER ERROR",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }else{
+            $_ck = DB::table('transaction')->where('id',$_id)->first();
+            if(!isset($_ck)){
+                $reply = json_encode(array(
+                    "STATUS" => 204,
+                    "MESSAGE" => "SERVER ERROR",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+            try{
+                $update = DB::table('transaction')->where('id', $_id)->update([
+                    'status' => "SELESAI",
+                ]);
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "SUCCESS",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }catch (Exception $e) {
+               return $e->errorMessage();
+            }
+        }
+    }
+    public function cd(){
+        return $this->isDownload;
     }
     public function category(){
       $getdata = DB::table('category')->get();
@@ -208,6 +253,7 @@ class MainController extends Controller
     {
         $name = $request->nama;
         $email = $request->email;
+        $telephone = $request->telephone;
         $role_user = $request->role_user;
         $username = $request->username;
         $password = $request->password;
@@ -222,6 +268,13 @@ class MainController extends Controller
             $reply = json_encode(array(
                 "STATUS" => 201,
                 "MESSAGE" => "email kosong",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        if (!isset($telephone)) {
+            $reply = json_encode(array(
+                "STATUS" => 201,
+                "MESSAGE" => "telephone kosong",
             ));
             return response($reply)->header('Content-Type', 'application/json');
         }
@@ -251,6 +304,7 @@ class MainController extends Controller
                 $insert = user::insert([
                     'name' => $name,
                     'email' => $email,
+                    'telephone' => $telephone,
                     'username' => $username,
                     'password' => $password,
                     'role_user' => $role_user,
@@ -816,7 +870,16 @@ class MainController extends Controller
         ));
         return response($reply)->header('Content-Type', 'application/json');
     }
-
+    public function mediastore($imagename){
+        return "OK200";
+      // $path = storage_path('product_images/'.$imagename);
+      // if(!File::exists($path)) abort(404);
+      // $file = File::get($path);
+      // $type = File::mimeType($path);
+      // $response = Response::make($file,200);
+      // $response->header("Content-Type",$type);
+      // return $response;
+    }
     public function transaction(Request $request)
     {
         $i_visitor = $request->visitor_id;
@@ -824,6 +887,8 @@ class MainController extends Controller
         $s_name = $request->store_name;
         $p_name = $request->product_name;
         $p_price = $request->product_price;
+        $s_tlp = $request->seller_telephone;
+        $v_tlp = $request->visitor_telephone;
         $p_key = $request->product_key;
         $p_img1 = $request->img1;
         $address_customer = $request->address_customer;
@@ -865,7 +930,12 @@ class MainController extends Controller
             ));
             return response($reply)->header('Content-Type', 'application/json');
         }
-        
+        $val_desc = '';
+        if(!isset($dsc)){
+          $val_desc = 'EMPTY';
+        }else{
+            $val_desc = $dsc;
+        }
         $get_v_name = DB::table('users')->where('id', $i_visitor)->first();
         try {
             $insert = transaksi::insert([
@@ -874,11 +944,14 @@ class MainController extends Controller
                 'store_name' => $s_name,
                 'visitor_name' => $get_v_name->name,
                 'product_name' => $p_name,
+                'seller_telephone' => $s_tlp,
+                'visitor_telephone' => "08888",
                 'product_price' => $p_price,
                 'product_key' => $p_key,
                 'product_img1' => $p_img1,
-                'description' => $dsc,
+                'description' => $val_desc,
                 'address_customer' => $address_customer,
+                'address_seller' => $address_seller,
                 'status' => $status,
             ]);
             if (!isset($insert)) {
@@ -966,6 +1039,7 @@ class MainController extends Controller
             foreach ($stores as $store) {
                 $variable['store_name'] = $store->name;
                 $variable['address'] = $store->address;
+                $variable['telephone'] = $store->telephone;
                 $result[] = $variable;
             }
             if ($products->isEmpty() && $products->isEmpty()) {
@@ -1077,5 +1151,16 @@ class MainController extends Controller
             return $e->errorMessage();
         }
     }
+    
+    public function srcImage($imagename){
+        $path = storage_path('product_images/'.$imagename);
+        if(!File::exists($path)) abort(404);
+        $file = File::get($path);
+        $type = File::mimeType($path);
+        $response = Response::make($file,200);
+        $response->header("Content-Type",$type);
+        return $response;
+      }
+  
    
 }

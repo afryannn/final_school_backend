@@ -25,10 +25,15 @@ Route::get('/Detail/{product_key}','MainController@DetailProduk');
 Route::post('/seller_transaksi','MainController@transactionSeller');
 Route::post('/visitor_transaksi', 'MainController@transactionVisitor');
 Route::post('/count-product', 'MainController@countproduct');
+Route::post('/user-confirm', 'MainController@confirm');
 Route::get('/categor', 'MainController@category');
 Route::get('/new-item', 'MainController@NewItem');
 Route::get('/getExcel/{id}', 'MainController@Excel');
 Route::get('/getPdf/{id}', 'MainController@getPdf');
+Route::get('/cd', 'MainController@cd');
+Route::get('/src/{imagename}', 'MainController@srcImage');
+Route::get('/mediastore/{imagename}', 'MainController@mediastore');
+
 });
 
 
