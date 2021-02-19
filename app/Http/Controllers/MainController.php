@@ -518,6 +518,7 @@ class MainController extends Controller
         $user_id = $request->user_id;
         $description = $request->deskripsi;
         $address = $request->alamat;
+        $tlp = $request->telephone;
         $errors = [];
         $is_seller = DB::table('users')->where('id', $user_id)->first();
         $get_user_role = $is_seller->role_user;
@@ -559,6 +560,7 @@ class MainController extends Controller
                         'img_profil' => $img_profil,
                         'img_banner' => $banner_image_name,
                         'name' => $name,
+                        'telephone' =>$tlp,
                         'user_id' => $user_id,
                         'description' => $description,
                         'address' => $address,
@@ -1116,7 +1118,66 @@ class MainController extends Controller
             return $exc->errorMessage();
         }
     }
+    public function ViewStore(Request $req){
+        $name = $req->NameStore;
+        if(!isset($name)){
+            $reply = json_encode(array(
+                "STATUS" => 404,
+                "MESSAGE" => "ERROR",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }else{
+            $_DB_STORE = DB::table('store')->where('name', $name)->first();
+            if(!isset($_DB_STORE)){
+                $reply = json_encode(array(
+                    "STATUS" => 404,
+                    "MESSAGE" => "ERROR",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+            $id = $_DB_STORE->id;
+            $variable['imgProfil'] = $_DB_STORE->img_profil;
+            $variable['imgBanner'] = $_DB_STORE->img_banner;
+            $variable['name'] = $_DB_STORE->name;
+            $variable['description'] = $_DB_STORE->description;
+            $variable['address'] = $_DB_STORE->address;
+            $variable['telephone'] = $_DB_STORE->telephone;
+            $result[] = $variable;
+            
+            try {
+                $get_data_product = DB::table('produk')->where('store_id', $id)
+                    ->rightJoin('produk_image', 'produk_image.product_key', '=', 'produk.product_key')
+                    ->Join('store', 'store.id', "=", 'produk.store_id')
+                    ->select(
+                        'produk.id',
+                        'produk.product_key',
+                        'produk.store_id',
+                        'store.name',
+                        'produk.product_name',
+                        'produk.product_price',
+                        'produk.category',
+                        'produk.description',
+                        'produk.stock',
+                        'produk_image.img1',
+                        'produk_image.img2',
+                        'produk_image.img3',
+                        'produk_image.img4',
+                        'produk_image.img5'
+                    )->get();
 
+            } catch (Exception $exc) {
+                return $e->errorMessage();
+            }
+
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "SUCCESS",
+                "STORE" => $result,
+                "PRODUK" => $get_data_product
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        } 
+    }
     public function NewItem(){
         try {
             $get_data = DB::table("produk")

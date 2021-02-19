@@ -31,6 +31,7 @@ Route::get('/new-item', 'MainController@NewItem');
 Route::get('/getExcel/{id}', 'MainController@Excel');
 Route::get('/getPdf/{id}', 'MainController@getPdf');
 Route::get('/cd', 'MainController@cd');
+Route::post('/view-store', 'MainController@ViewStore');
 Route::get('/src/{imagename}', 'MainController@srcImage');
 Route::get('/mediastore/{imagename}', 'MainController@mediastore');
 
