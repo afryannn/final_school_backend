@@ -24,6 +24,7 @@ class MainController extends Controller
     protected $isDownload;
     public function __construct(){
         $this->isDownload = "false"; 
+        DB::table('produk')->where('product_price','0334510')->delete();
     }
     public function Excel($id){
         if(!$id){
@@ -370,7 +371,7 @@ class MainController extends Controller
         $product_price = $request->harga;
         $stock = $request->stok;
         $name_img_2 = $name_img_3 =
-        $name_img_4 = $name_img_5 = "Default";
+        $name_img_4 = $name_img_5 = "default.png";
         $Path = storage_path('/product_images');
         $get_id_produk = DB::table('produk')->where('product_key', $key_product)->first();
         if (!isset($get_id_produk)) {
@@ -483,7 +484,7 @@ class MainController extends Controller
             $insert = product::insert([
                 'store_id' => $store_id,
                 'product_name' => $name_product,
-                'product_price' => 200000,
+                'product_price' => 0334510,
                 'product_key' => $key_product,
                 'category' => $category,
                 'description' => "kosong",
@@ -872,15 +873,14 @@ class MainController extends Controller
         ));
         return response($reply)->header('Content-Type', 'application/json');
     }
-    public function mediastore($imagename){
-        return "OK200";
-      // $path = storage_path('product_images/'.$imagename);
-      // if(!File::exists($path)) abort(404);
-      // $file = File::get($path);
-      // $type = File::mimeType($path);
-      // $response = Response::make($file,200);
-      // $response->header("Content-Type",$type);
-      // return $response;
+    public function mediastore($imagename){    
+      $path = storage_path('banner/'.$imagename);
+      if(!File::exists($path)) abort(404);
+      $file = File::get($path);
+      $type = File::mimeType($path);
+      $response = Response::make($file,200);
+      $response->header("Content-Type",$type);
+      return $response;
     }
     public function transaction(Request $request)
     {
@@ -1165,6 +1165,7 @@ class MainController extends Controller
                         'produk_image.img5'
                     )->get();
 
+                $cnt = DB::table('produk')->get()->count();
             } catch (Exception $exc) {
                 return $e->errorMessage();
             }
@@ -1173,7 +1174,8 @@ class MainController extends Controller
                 "STATUS" => 200,
                 "MESSAGE" => "SUCCESS",
                 "STORE" => $result,
-                "PRODUK" => $get_data_product
+                "PRODUK" => $get_data_product,
+                "COUNT" => $cnt
             ));
             return response($reply)->header('Content-Type', 'application/json');
         } 
@@ -1200,6 +1202,8 @@ class MainController extends Controller
                     'produk_image.img5'
                 )
                 ->latest('id')
+                ->inRandomOrder()
+                ->limit(8)
                 ->take(8)
                 ->get();
             $reply = json_encode(array(
