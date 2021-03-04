@@ -363,7 +363,7 @@ class MainController extends Controller
         } catch (Exception $e) {
             return $e->errorMessage();
         }
-    }
+    }   
     public function complete_produk(Request $request)
     {
         $key_product = $request->key_product;
@@ -1062,51 +1062,46 @@ class MainController extends Controller
 
     public function countproduct(Request $request){
        $user_id = $request->user_id;
-       try{
-         $get_id_store = store::where('id', $user_id)->first();
+    //    try{
+           
+        $get_id_store = store::where('user_id', $user_id)->first();
          if(!isset($get_id_store)){
             $reply = json_encode(array(
                 "STATUS" => 403,
-                "MESSAGE" => "NULL",
+                "MESSAGE" => "id = NULL",
             ));
             return response($reply)->header('Content-Type', 'application/json');
          }
+
          $s_id = $get_id_store->id;
          $g = DB::table('produk')->where('store_id', $s_id)->get();
+         $n_store = DB::table('store')->where('id', $s_id)->first();
+         $BY_STORE = $n_store->name;
+         $FINAL_COUNT_PRODUCT = '';
          if ($g->isEmpty()) {
-            $reply = json_encode(array(
-                "STATUS" => 403,
-                "MESSAGE" => "NULL",
-            ));
-            return response($reply)->header('Content-Type', 'application/json');
-        }
+            $FINAL_COUNT_PRODUCT = "0";
+         }
         $FINAL_COUNT_PRODUCT = $g->count();
+
         $cTransaction = DB::table('transaction')->where('store_id', $s_id)->get();
+        $FINAL_COUNT_TRANSACTION = '';
         if ($cTransaction->isEmpty()) {
-            $reply = json_encode(array(
-                "STATUS" => 403,
-                "MESSAGE" => "NULL",
-            ));
-            return response($reply)->header('Content-Type', 'application/json');
+            $FINAL_COUNT_TRANSACTION = "0";
         }
         $FINAL_COUNT_TRANSACTION = $cTransaction->count();    
-        $sTransaction = DB::table('transaction')->where('store_id', $s_id)->where('status','SUCCESS')->get();
+
+        $sTransaction = DB::table('transaction')->where('store_id', $s_id)->where('status','SELESAI')->get();
+   
+        $FINAL_SUCCESS_TRANSACTION = ''; 
         if ($sTransaction->isEmpty()) {
-            $reply = json_encode(array(
-                "STATUS" => 403,
-                "MESSAGE" => "NULL",
-            ));
-            return response($reply)->header('Content-Type', 'application/json');
+            $FINAL_SUCCESS_TRANSACTION = "0";
         }
-        $FINAL_SUCCESS_TRANSACTION = $sTransaction->count();   
-       
+            $FINAL_SUCCESS_TRANSACTION  = $sTransaction->count();
         $arr = array(
-            "TITLE" => "Jumlah Produk",
-            "VALUE"=>$FINAL_COUNT_PRODUCT,
-            "TITLE" => "Jumlah Transaksi",
-            "VALUE"=>$FINAL_COUNT_TRANSACTION,
-            "TITLE" => "Transaksi Success",
-            "VALUE"=>$FINAL_SUCCESS_TRANSACTION
+            "BY_STORE" => $BY_STORE,
+            "J_PRODUK" => $FINAL_COUNT_PRODUCT,
+            "J_TRNS" => $FINAL_COUNT_TRANSACTION,
+            "J_SUCCS" => $FINAL_SUCCESS_TRANSACTION
         );
         $reply = json_encode(array(
             "STATUS" => 200,
@@ -1114,9 +1109,9 @@ class MainController extends Controller
             "DATA" => $arr
         ));
         return response($reply)->header('Content-Type', 'application/json');
-       }catch (Exception $exc) {
-            return $exc->errorMessage();
-        }
+    //    }catch (Exception $exc) {
+    //         return $exc->errorMessage();
+    //     }
     }
     public function ViewStore(Request $req){
         $name = $req->NameStore;
