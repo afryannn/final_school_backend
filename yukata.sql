@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 18, 2021 at 11:30 AM
+-- Generation Time: Mar 10, 2021 at 09:35 AM
 -- Server version: 10.4.6-MariaDB
 -- PHP Version: 7.3.8
 
@@ -38,8 +38,10 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `category`) VALUES
-(1, 'Meja'),
-(2, 'Kursi');
+(1, 'KURSI'),
+(2, 'MEJA'),
+(3, 'UKIRAN'),
+(4, 'GEBYOK');
 
 -- --------------------------------------------------------
 
@@ -63,12 +65,36 @@ CREATE TABLE `produk` (
 --
 
 INSERT INTO `produk` (`id`, `product_key`, `store_id`, `product_name`, `product_price`, `category`, `description`, `stock`) VALUES
-(2, '1Q3YJTwbJ', 1, 'adjt 2', 3000, 'Kursi', 'pee', 5),
-(3, '1fwVDh5E0', 1, 'adjt3', 3000, 'Kursi', 'ds', 4),
-(4, '14kWDbhVN', 1, 'Adjt 5', 4000000, 'Meja', 'Exp Desc', 3),
-(5, '1pxYYOraf', 1, 'halo', 200000, 'Meja', 'kosong', 0),
-(6, '16w86KEy6', 1, 'kaka', 200000, 'Meja', 'kosong', 0),
-(7, '2GKzz5w5p', 2, 'update', 4000, 'Meja', 'desc By Siraj Meuble', 3);
+(1, '17FeSKyFj', 1, 'SunBed Berjemur Mebel Jepara', 950000, 'KURSI', 'Spesifikasi \nKondisi : Baru\nBerat     : 100 Gram\nPreorder: 7 Hari\n\nsofa kursi Cafe , kursi santai , kursi tamu minimalis pengrajin jepara\n\nUD.SIRAJ MEUBLE : menjual Kebutuhan Furniture dengan kualitas barang yang bagus karena proses produksi kami kerjakan sendiri langsung di UD. SIRAJ MEUBLE Jepara oleh pengrajin yang sudah berpengalaman dengan menggunakan bahan JATI BERKUALITAS', 5),
+(3, '10wzQnefX', 1, 'KURSI - CAFE - RESTO - Belum finising', 250000, 'KURSI', 'Tinggi dudukan 45cm.\r\nTinggi sandaran 80cm. Panjang 43cm. Lebar 42cm Terbuat dari kayu jati solid. Finising melamin nc. Bisa request warna', 5),
+(4, '1OeEV6NBB', 1, 'MEJA MAKAN SET OUTDOOR', 45000000, 'MEJA', 'Terdiri dari - 1 meja ukuran 180cm x90cm x 75cm. Kaki pakai besi. - 6 kursi dilengkapi matras dudukan. - Finising teak oil outdoor', 5),
+(6, '1fl9OCZLP', 1, 'MEJA MEETING LAMINATING KAYU JATI - Finising', 550000, 'MEJA', '-Terbuat dari kayu jati yg diproses melalui laminating sehingga nampak unik dan antik. - Finising melamin nc natural menambah indah dan menarik dipandang mata. - Dilengkapi stop kontak listrik merk bruco yg bisa dipakai cas hp atau laptop. - Ukuran 280cm x 100cm x 75cm.', 3),
+(7, '1aYId9pF1', 1, 'MEJA BELAJAR IMPRES SD SMP SMA MEBEL JEPARA', 300000, 'MEJA', 'Terbuat dari kayu mahoni Pengerjaan rapi karena diawasi oleh qc kami yang sudah berpengalaman. Konstruksi kuat. Finising melamin nc. Grade barang berkwaliats. Harga terjangkau. Ukuran kursi 60x50x85cm. tinggi dudukan kursi 45cm  Silahkan bertanya apa saja yang berhubungan dengan produk kami.', 3),
+(8, '1l1AbYbcz', 1, 'KURSI SOFA MEBEL JEPARA', 950000, 'KURSI', 'Terbuat dari kayu mahogani berkwalitas. cover pakai oscar. mudah dibersihkan. Finising melamin atau duco seduai request  HARGA BELUM TERMASUK ONGKIR BARANG VIA TRUCK.  Nb: - Ongkir yg tercantum hanya untuk pengiriman dokumen/faktur. - Pengiriman barang melalui expedisi truck karena kategori barang besar.  Jika masih ada yg ditanyakan silahkan hubungi kami.', 3),
+(14, '1obWFtXn7', 1, 'ds', 112968, 'KURSI', 'kosong', 0),
+(18, '1XvHY0aKz', 1, 'Exp Product 1', 1000000, 'KURSI', 'Exp Desc', 1),
+(19, '1xUOeoDeA', 1, 'Exp Product 2', 200000, 'MEJA', 'Exp Desc', 2),
+(20, '11WZ8vsoU', 1, 'SA', 112968, 'KURSI', 'kosong', 0),
+(21, '1bWEPZyMs', 1, 'ASX', 112968, 'KURSI', 'kosong', 0),
+(22, '1YdXRVbm1', 1, 'dc', 112968, 'KURSI', 'kosong', 0),
+(23, '1n7AVNKge', 1, 'c', 112968, 'KURSI', 'kosong', 0),
+(24, '1Dz7KUKCg', 1, 'adjt', 112968, 'KURSI', 'kosong', 0),
+(25, '1DlIjVh01', 1, 'dcs', 112968, 'MEJA', 'kosong', 0),
+(26, '1v35Va4I8', 1, 'adjt', 112968, 'MEJA', 'kosong', 0),
+(27, '1Hiyi1GQ0', 1, 'dscs', 112968, 'KURSI', 'kosong', 0),
+(28, '1LuiqCcxE', 1, 'adjt', 112968, 'KURSI', 'kosong', 0),
+(29, '1w7xoJPFc', 1, 'cs', 112968, 'MEJA', 'kosong', 0),
+(30, '1ggxPdjlf', 1, 'sa', 112968, 'KURSI', 'kosong', 0),
+(31, '1y7AtwIzG', 1, 'c', 112968, 'KURSI', 'kosong', 0),
+(32, '1ZcnT8cr1', 1, 'adjt', 1, 'KURSI', 'dc fv', 2),
+(33, '1vFemCvyb', 1, 'dcs', 112968, 'KURSI', 'kosong', 0),
+(34, '186ELymiu', 1, 'cdscf', 32, 'KURSI', 'dcsc', 32),
+(35, '12JC8gxMi', 1, 'dcs', 112968, 'KURSI', 'kosong', 0),
+(36, '1naM1rSo9', 1, 'cdscf', 112968, 'KURSI', 'kosong', 0),
+(37, '1ZE8kaEM3', 1, 'dcs', 112968, 'KURSI', 'kosong', 0),
+(38, '1mQ8kOiUb', 1, 'dscs', 32, 'KURSI', 'dcs', 3),
+(39, '189VFZQkt', 1, 'ds', 112968, 'MEJA', 'kosong', 0),
+(40, '1hoOAMkwu', 1, 'cdxsw', 32, 'KURSI', 'dscx', 3);
 
 -- --------------------------------------------------------
 
@@ -91,10 +117,19 @@ CREATE TABLE `produk_image` (
 --
 
 INSERT INTO `produk_image` (`id`, `product_key`, `img1`, `img2`, `img3`, `img4`, `img5`) VALUES
-(2, '1Q3YJTwbJ', 'dua.png', 'Default', 'Default', 'Default', 'Default'),
-(3, '1fwVDh5E0', 'tiga.png', 'Default', 'Default', 'Default', 'Default'),
-(4, '14kWDbhVN', 'empat.png', '14kWDbhVN3iOU4ze8Q.png', 'Default', 'Default', 'Default'),
-(5, '2GKzz5w5p', '2GKzz5w5peMdEBEAdn.jpg', 'Default', 'Default', 'Default', 'Default');
+(1, '17FeSKyFj', '17FeSKyFjOVA0PSXSv.jpg', '17FeSKyFj6VuJbx1sg.jpg', 'default.png', 'default.png', 'default.png'),
+(3, '10wzQnefX', '10wzQnefXFrvr5Vwux.jpg', '10wzQnefXLoJwtYkuZ.jpg', 'default.png', 'default.png', 'default.png'),
+(4, '1OeEV6NBB', '1OeEV6NBBXhlf4rlKz.jpg', '1OeEV6NBBDlawm9RpT.jpg', 'default.png', 'default.png', 'default.png'),
+(6, '1fl9OCZLP', '1fl9OCZLPr3ZNjPc7N.jpg', '1fl9OCZLPPT2WQX8Em.jpg', '1fl9OCZLPCOhuKZnFU.jpg', 'default.png', 'default.png'),
+(7, '1aYId9pF1', '1aYId9pF1GqT6B0r2v.jpg', '1aYId9pF1BRqVG1AEX.jpg', 'default.png', 'default.png', 'default.png'),
+(8, '1l1AbYbcz', '1l1AbYbczmTcaEWT0e.jpg', '1l1AbYbczs5Ptrxan6.jpg', 'default.png', 'default.png', 'default.png'),
+(14, '1XvHY0aKz', '1XvHY0aKzGtQul018M.jpg', '1XvHY0aKzzW7Gxr8Ut.jpg', 'default.png', 'default.png', 'default.png'),
+(15, '1xUOeoDeA', '1xUOeoDeASfCN1NSBs.jpg', '1xUOeoDeAW2U9KBlmg.jpg', 'default.png', 'default.png', 'default.png'),
+(16, '1ZcnT8cr1', '1ZcnT8cr1je9Vw3iq8.jpg', 'default.png', 'default.png', 'default.png', 'default.png'),
+(17, '1vFemCvyb', '1vFemCvybg7ip4JOAl.jpg', '1vFemCvybvEWDJEdSD.jpg', 'default.png', 'default.png', 'default.png'),
+(18, '186ELymiu', '186ELymiu5xSS6TGwc.jpg', 'default.png', 'default.png', 'default.png', 'default.png'),
+(19, '1mQ8kOiUb', '1mQ8kOiUbJYZgne9Bl.jpg', 'default.png', 'default.png', 'default.png', 'default.png'),
+(20, '1hoOAMkwu', '1hoOAMkwuyAebRd1AC.jpg', '1hoOAMkwujrZx60CF8.jpg', '1hoOAMkwuUg7i16CBK.jpg', '1hoOAMkwutBmTUC0ir.jpg', '1hoOAMkwuRdOPOkltL.jpg');
 
 -- --------------------------------------------------------
 
@@ -118,8 +153,8 @@ CREATE TABLE `store` (
 --
 
 INSERT INTO `store` (`id`, `img_profil`, `img_banner`, `name`, `user_id`, `description`, `address`, `telephone`) VALUES
-(1, 'default-profil.jpg', 'default-profil.jpg', 'ADJATI MEUBLE', 1, 'desc store', 'Mlonggo', '08565786768432'),
-(2, 'default-profil.jpg', 'default-profil.jpg', 'SIRAJ MEUBLE', 2, 'desc store', 'Mlonggo', '085656565656');
+(1, 'profilsrj.jpg', 'image4601.png', 'ADAJATI MEUBLE', 1, 'Menjual Mebel Asli Jepara dan dibuat dengan Kayu Jati asli,bisa preorder dengan memilih kayu,cat dan model ukiran\r\n\r\n\r\n', 'Jl. Kauman, RT.03/RW.03, Rw2, Srobyong, Kec. Mlonggo, Kabupaten Jepara, Jawa Tengah 59452', '0897754998374'),
+(2, 'default-profil.jpg', '1.png', 'SIRAJ MEUBLE', 2, 'Pe', 'Jl. Kauman, RT.03/RW.03, Rw2, Srobyong, Kec. Mlonggo, Kabupaten Jepara, Jawa Tengah 59452', '089789979883');
 
 -- --------------------------------------------------------
 
@@ -150,23 +185,8 @@ CREATE TABLE `transaction` (
 --
 
 INSERT INTO `transaction` (`id`, `visitor_id`, `store_id`, `store_name`, `visitor_name`, `seller_telephone`, `visitor_telephone`, `product_name`, `product_price`, `product_key`, `product_img1`, `address_seller`, `address_customer`, `description`, `status`) VALUES
-(1, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'meja adjt', 100000, '1FOcMGOn8', '1FOcMGOn8HpSrBfKpF.png', 'Mlonggo', 'Mlonggo', 'hei!!', 'DI PROSES'),
-(2, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'meja adjt', 100000, '1FOcMGOn8', '1FOcMGOn8HpSrBfKpF.png', 'Mlonggo', 'Mlonggo', 'cdscd', 'DI PROSES'),
-(3, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'meja adjt', 100000, '1FOcMGOn8', '1FOcMGOn8HpSrBfKpF.png', 'Mlonggo', 'Mlonggo', 'cdscd', 'DI PROSES'),
-(4, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'meja adjt', 100000, '1FOcMGOn8', '1FOcMGOn8HpSrBfKpF.png', 'Mlonggo', 'Mlonggo', 'cdscd', 'DI PROSES'),
-(5, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'meja adjt', 100000, '1FOcMGOn8', '1FOcMGOn8HpSrBfKpF.png', 'Mlonggo', 'Mlonggo', 'cdscd', 'DI PROSES'),
-(6, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'meja adjt', 100000, '1FOcMGOn8', '1FOcMGOn8HpSrBfKpF.png', 'Mlonggo', 'Mlonggo', 'cdscds', 'DI PROSES'),
-(7, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'meja adjt', 100000, '1FOcMGOn8', '1FOcMGOn8HpSrBfKpF.png', 'Mlonggo', 'Mlonggo', 'cdscds', 'DI PROSES'),
-(8, 3, 2, 'SIRAJ MEUBLE', 'afrr', '085656565656', '08970025959', 'srj1', 4000, '2GKzz5w5p', '2GKzz5w5peMdEBEAdn.jpg', 'Mlonggo', 'Mlonggo', 'Exp Buyer', 'SELESAI'),
-(9, 3, 2, 'SIRAJ MEUBLE', 'afrr', '085656565656', '08970025959', 'update', 4000, '2GKzz5w5p', '2GKzz5w5peMdEBEAdn.jpg', 'Mlonggo', 'dcdfv', 'Null', 'DI PROSES'),
-(10, 3, 2, 'SIRAJ MEUBLE', 'afrr', '085656565656', '08970025959', 'update', 4000, '2GKzz5w5p', '2GKzz5w5peMdEBEAdn.jpg', 'Mlonggo', 'dcdfv', 'Null', 'DI PROSES'),
-(11, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'Adjt 5', 4000000, '14kWDbhVN', 'empat.png', 'Mlonggo', 'hudis', 'Null', 'DI PROSES'),
-(12, 4, 1, 'adjt', 'psstore', '08565786768432', '08970025959', 'dff', 4, '1FOcMGOn8', 'C:\\xampp\\tmp\\php60D.tmp', 'rer', 're', 'EMPTY', 'DI PROSES'),
-(13, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08970025959', 'adjt 2', 3000, '1Q3YJTwbJ', 'dua.png', 'Mlonggo', 'dcf', 'Null', 'DI PROSES'),
-(14, 3, 1, 'ADJATI MEUBLE', 'afrr', '08565786768432', '08888', 'Adjt 5', 4000000, '14kWDbhVN', 'empat.png', 'Mlonggo', 'cz', 'Null', 'DI PROSES'),
-(15, 3, 2, 'SIRAJ MEUBLE', 'afrr', '085656565656', '08888', 'update', 4000, '2GKzz5w5p', '2GKzz5w5peMdEBEAdn.jpg', 'Mlonggo', 'scsx', 'Null', 'DI PROSES'),
-(16, 3, 2, 'SIRAJ MEUBLE', 'afrr', '085656565656', '08888', 'update', 4000, '2GKzz5w5p', '2GKzz5w5peMdEBEAdn.jpg', 'Mlonggo', 'scsx', 'Null', 'DI PROSES'),
-(17, 3, 2, 'SIRAJ MEUBLE', 'afrr', '085656565656', '08888', 'update', 4000, '2GKzz5w5p', '2GKzz5w5peMdEBEAdn.jpg', 'Mlonggo', 'SRG', 'To Push', 'DI PROSES');
+(3, 3, 1, 'ADAJATI MEUBLE', 'user1', '0897754998374', '08888', 'SunBed Berjemur Mebel Jepara', 950000, '17FeSKyFj', '17FeSKyFjOVA0PSXSv.jpg', 'Jl. Kauman, RT.03/RW.03, Rw2, Srobyong, Kec. Mlonggo, Kabupaten Jepara, Jawa Tengah 59452', 'Exp', 'Exp', 'SELESAI'),
+(4, 3, 1, 'ADAJATI MEUBLE', 'user1', '0897754998374', '08888', 'MEJA MAKAN SET OUTDOOR', 45000000, '1OeEV6NBB', '1OeEV6NBBXhlf4rlKz.jpg', 'Jl. Kauman, RT.03/RW.03, Rw2, Srobyong, Kec. Mlonggo, Kabupaten Jepara, Jawa Tengah 59452', 's', 'Null', 'SELESAI');
 
 -- --------------------------------------------------------
 
@@ -181,19 +201,17 @@ CREATE TABLE `users` (
   `telephone` varchar(30) NOT NULL,
   `username` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
-  `role_user` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `role_user` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `telephone`, `username`, `password`, `role_user`) VALUES
-(1, 'adajati meuble', 'adjt@gmail.com', '08970025959', 'adjt', 'p', 'SELLER'),
-(2, 'siraj meuble', 's@g.g', '08970025959', 'srj', 'p', 'SELLER'),
-(3, 'afrr', 'afr@g.c', '08970025959', 'afrr', 'p', 'VISITOR'),
-(4, 'psstore', 'a@a.a', '08970025959', 'pss', 'p', 'SELLER'),
-(5, 'fang', 'adajati@m.m', '085', 'fang12', 'p', 'VISITOR');
+(1, 'ADAJATI MEUBLE', 'adajatimeuble1@gmail.com', '089789979883', 'adjtmeuble', 'p', 'SELLER'),
+(2, 'SIRAJ MEUBLE', 'test@gmail.com', '0897999999999', 'srj', 'p', 'SELLER'),
+(3, 'user1', 's@s.s', '09898989898', 'usr1', 'p', 'VISITOR');
 
 --
 -- Indexes for dumped tables
@@ -243,19 +261,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `produk`
 --
 ALTER TABLE `produk`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `produk_image`
 --
 ALTER TABLE `produk_image`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `store`
@@ -267,13 +285,13 @@ ALTER TABLE `store`
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
