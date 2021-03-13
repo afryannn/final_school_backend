@@ -1220,7 +1220,37 @@ class MainController extends Controller
         $response = Response::make($file,200);
         $response->header("Content-Type",$type);
         return $response;
-      }
+    }
+
+    public function removestatus(Request $req){
+        $_id = $req->id;
+        if(!$_id){
+            $reply = json_encode(array(
+                "STATUS" => 204,
+                "MESSAGE" => "SERVER ERROR",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }else{
+            $_ck = DB::table('transaction')->where('id',$_id)->first();
+            if(!isset($_ck)){
+                $reply = json_encode(array(
+                    "STATUS" => 204,
+                    "MESSAGE" => "SERVER ERROR",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }
+            try{
+                $update = DB::table('transaction')->where('id', $_id)->delete();
+                $reply = json_encode(array(
+                    "STATUS" => 200,
+                    "MESSAGE" => "SUCCESS",
+                ));
+                return response($reply)->header('Content-Type', 'application/json');
+            }catch (Exception $e) {
+               return $e->errorMessage();
+            }
+        }
+    }
   
    
 }
