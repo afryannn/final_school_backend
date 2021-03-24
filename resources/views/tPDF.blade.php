@@ -11,9 +11,9 @@
 </head>
 
 <body>
-	<center>
-		<img src="https://cdn.vuetifyjs.com/images/cards/cooking.png" style="width:200px;">
-	</center>
+	{{-- <center>
+		<img src="http://localhost:8000/api/v1/src/{{$items->product_img1}}" style="width:200px;">
+	</center> --}}
 	<br>
 	<br>
 	<center>

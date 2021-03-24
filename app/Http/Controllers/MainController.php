@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Storage;
 use App\ImageModel as imageproduk;
 use App\ProductModel as product;
+use App\Popularity as popularity;
 use App\StoreModel as store;
 use App\TransactionModel as transaksi;
 use App\Exports\TransaksiExport as te;
@@ -307,7 +308,7 @@ class MainController extends Controller
                     'email' => $email,
                     'telephone' => $telephone,
                     'username' => $username,
-                    'password' => $password,
+                    'password' => bcrypt($password),
                     'role_user' => $role_user,
                 ]);
                 if (!isset($insert)) {
@@ -329,7 +330,6 @@ class MainController extends Controller
         } catch (Exception $exc) {
             return $e->errorMessage();
         }
-
     }
     public function list_produk2()
     {
@@ -504,13 +504,22 @@ class MainController extends Controller
     public function cekstore(Request $request)
     {
         $user_id = $request->user_id;
-        $query = DB::table('store')->where('user_id', $user_id)->exists();
-        if ($query) {
+        $query = DB::table('store')->where('user_id', $user_id)->first();
+
+        if(!isset($query)){
             $reply = json_encode(array(
                 "STATUS" => 403,
-                "MESSAGE" => "ERROR",
+                "MESSAGE" => "toko tidak ditemukan",
             ));
             return response($reply)->header('Content-Type', 'application/json');
+
+        }else{
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "toko ditemukan",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+
         }
     }
     public function createstore(Request $request)
@@ -658,6 +667,7 @@ class MainController extends Controller
             } catch (Exception $exc) {
                 return $e->errorMessage();
             }
+            
             $update2 = DB::table('produk_image')->where('product_key', $key_product)->update([
                 'img1' => $name_img_1,
                 'img2' => $name_img_2,
@@ -665,6 +675,12 @@ class MainController extends Controller
                 'img4' => $name_img_4,
                 'img5' => $name_img_5,
             ]);
+
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }elseif($C_TYPE == "DATA"){
             $update1 = DB::table('produk')->where('product_key', $key_product)->update([
                 'product_name' => $name_product,
@@ -672,6 +688,11 @@ class MainController extends Controller
                 'description' => $description,
                 'stock' => $stock,
             ]);
+            $reply = json_encode(array(
+                "STATUS" => 200,
+                "MESSAGE" => "success",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
         }
         if (!isset($update1) && !isset($update2)) {
             $reply = json_encode(array(
@@ -680,11 +701,7 @@ class MainController extends Controller
             ));
             return response($reply)->header('Content-Type', 'application/json');
         }
-        $reply = json_encode(array(
-            "STATUS" => 200,
-            "MESSAGE" => "success",
-        ));
-        return response($reply)->header('Content-Type', 'application/json');
+        
     }
     public function transactionVisitor(Request $request)
     {
@@ -1196,9 +1213,7 @@ class MainController extends Controller
                     'produk_image.img4',
                     'produk_image.img5'
                 )
-                ->latest('id')
                 ->inRandomOrder()
-                ->limit(8)
                 ->take(8)
                 ->get();
             $reply = json_encode(array(
@@ -1251,6 +1266,64 @@ class MainController extends Controller
             }
         }
     }
-  
-   
+
+    public function Deletetransaction(Request $request)
+    {
+        $s_id = $request->id;
+        if (!isset($s_id)) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $tb_store = DB::table('store')->where('user_id', $s_id)->first();
+        if (!isset($tb_store)) {
+            $reply = json_encode(array(
+                "STATUS" => 403,
+                "MESSAGE" => "kesalahan server",
+            ));
+            return response($reply)->header('Content-Type', 'application/json');
+        }
+        $get_tb_transaksi = $tb_store->id;
+        try {
+            $sql = DB::table('transaction')
+            ->where('store_id', $get_tb_transaksi)
+            ->where('status',"SELESAI")
+            ->delete();            
+        } catch (Exception $exc) {
+            return $exc->errorMessage();
+        }
+    }
+
+    public function post_popularity(Request $request){
+       $title = $request->title;
+       $click = 0;
+       $get_like = DB::table('t_popularity')->where('title', $title)->first();
+       if($get_like == null){
+        popularity::insert([
+            'title' => $title,
+            'clicked' => 1,
+        ]);
+       }else{
+        $get_title = $get_like->title;
+        $get_click = $get_like->clicked;
+        if($title == $get_title){
+        $update = DB::table('t_popularity')->where('title', $get_title)->update([
+            'clicked' => $get_click + 1,
+        ]);
+       }
+       }
+    }
+
+    public function getpopularity(){
+       $get_data = DB::table('t_popularity')->orderBy('clicked','desc')->limit(5)->get();
+       $reply = json_encode(array(
+        "STATUS" => 200,
+        "MESSAGE" => "SUCCESS",
+        "DATA" => $get_data
+      ));
+     return response($reply)->header('Content-Type', 'application/json');
+    }
+
 }

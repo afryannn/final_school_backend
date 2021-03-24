@@ -33,9 +33,11 @@ Route::get('/getPdf/{id}', 'MainController@getPdf');
 Route::get('/cd', 'MainController@cd');
 Route::post('/removestatus', 'MainController@removestatus');
 Route::post('/view-store', 'MainController@ViewStore');
+Route::post('/delete-transaction', 'MainController@Deletetransaction');
 Route::get('/src/{imagename}', 'MainController@srcImage');
 Route::get('/mediastore/{imagename}', 'MainController@mediastore');
-
+Route::post('/post_popularity', 'MainController@post_popularity');
+Route::get('/get_popularity', 'MainController@getpopularity');
 });
 
 
